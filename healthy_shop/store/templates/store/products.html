@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Healthy Shop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:#f5f7f9;
+            margin:0;
+            padding:0;
+        }
+
+        /* Шапка */
+        .header {
+            background:#4CAF50;
+            color:white;
+            padding:20px;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            position:relative;
+        }
+
+        .header .logo {
+            font-size:28px;
+            font-weight:bold;
+            margin-bottom:10px;
+        }
+
+        .header .categories {
+            margin-bottom:10px;
+        }
+
+        .header .categories a {
+            color:white;
+            text-decoration:none;
+            margin:0 10px;
+            font-weight:bold;
+        }
+
+        .header .categories a:hover {
+            text-decoration:underline;
+        }
+
+        .header .user {
+            position:absolute;
+            top:20px;
+            right:20px;
+        }
+
+        .header .user a {
+            color:white;
+            text-decoration:none;
+            margin-left:10px;
+            font-weight:bold;
+        }
+
+        /* Контейнер товаров */
+        .container {
+            padding:20px;
+            max-width:1200px;
+            margin:auto;
+        }
+
+        .products {
+            display:flex;
+            flex-wrap:wrap;
+            justify-content:center;
+        }
+
+        .product {
+            background:white;
+            border:1px solid #ddd;
+            border-radius:8px;
+            width:220px;
+            margin:10px;
+            padding:10px;
+            box-shadow:0 4px 8px rgba(0,0,0,0.1);
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            text-align:center;
+        }
+
+        .product img {
+            width:100%;
+            height:150px;
+            object-fit:cover;
+            border-radius:6px;
+            cursor:pointer;
+        }
+
+        .product h3 {
+            margin:10px 0 5px;
+            cursor:pointer;
+            color: #333; /* Название черное */
+        }
+
+        .product a {
+            color: inherit;          /* Наследуем цвет родителя */
+            text-decoration: none;   /* Убираем подчеркивание */
+        }
+
+        .product a:hover h3 {
+            color: #4CAF50;          /* Подсветка при наведении */
+        }
+
+        .product p {
+            font-size:14px;
+            color:#555;
+            min-height:40px;
+        }
+
+        .price {
+            font-weight:bold;
+            margin:10px 0;
+            font-size:16px;
+        }
+
+        button {
+            background:#4CAF50;
+            color:white;
+            border:none;
+            padding:8px;
+            width:100%;
+            cursor:pointer;
+            border-radius:4px;
+            font-weight:bold;
+        }
+
+        button:hover {
+            background:#43a047;
+        }
+
+        .empty {
+            text-align:center;
+            font-size:18px;
+            color:#777;
+            margin-top:50px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">Healthy Shop 🥗</div>
+
+    <nav class="categories">
+        <a href="/">Все</a>
+        {% for category in categories %}
+            <a href="?category={{ category.id }}">{{ category.name }}</a>
+        {% endfor %}
+    </nav>
+
+    <div class="user">
+        {% if user.is_authenticated %}
+            <a href="{% url 'cart_detail' %}">🛒 Корзина</a>
+            {{ user.username }}
+            <a href="{% url 'logout' %}">Выйти</a>
+        {% else %}
+            <a href="{% url 'login' %}">Войти</a>
+            <a href="{% url 'register' %}">Регистрация</a>
+        {% endif %}
+    </div>
+</header>
+
+<div class="container">
+    {% if products %}
+    <div class="products">
+        {% for product in products %}
+            <div class="product">
+                <a href="{% url 'product_detail' product.id %}">
+                    <img src="{{ product.image }}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                </a>
+                <p>{{ product.description }}</p>
+                <div class="price">{{ product.price }} ₽</div>
+
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'add_to_cart' product.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Купить</button>
+                    </form>
+                {% else %}
+                    <p style="color:red;">Войдите, чтобы купить</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <div class="empty">Товары не найдены</div>
+    {% endif %}
+</div>
+
+</body>
+</html>

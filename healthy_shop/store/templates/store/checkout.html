@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Оформление заказа</title>
+    <style>
+        body { font-family: Arial; background:#f5f7f9; padding:20px; }
+        .container { max-width:500px; margin:auto; background:white; padding:20px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+        h2 { margin-top:0; }
+        .input-field { width:100%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; }
+        button { padding:10px 20px; background:#4CAF50; color:white; border:none; border-radius:5px; cursor:pointer; }
+        .total { font-weight:bold; margin-bottom:15px; }
+        a { text-decoration:none; color:#4CAF50; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Оформление заказа</h2>
+
+    <p class="total">Итого: {{ total }} ₽</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Подтвердить заказ</button>
+    </form>
+
+    <p><a href="{% url 'cart_detail' %}">← Вернуться в корзину</a></p>
+</div>
+</body>
+</html>

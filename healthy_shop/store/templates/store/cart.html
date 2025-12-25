@@ -1,0 +1,175 @@
+{% load extra_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Корзина — Healthy Shop</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:#f5f7f9;
+            margin:0;
+            padding:0;
+        }
+
+        /* Шапка */
+        .header {
+            background:#4CAF50;
+            color:white;
+            padding:15px 20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .header a {
+            color:white;
+            text-decoration:none;
+            font-weight:bold;
+            margin-left:15px;
+        }
+
+        /* Контейнер корзины */
+        .container {
+            max-width:1000px;
+            margin:30px auto;
+            background:white;
+            padding:20px;
+            border-radius:8px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top:0;
+        }
+
+        table {
+            width:100%;
+            border-collapse:collapse;
+            margin-top:20px;
+        }
+
+        th {
+            background:#4CAF50;
+            color:white;
+            padding:12px;
+            text-align:left;
+        }
+
+        td {
+            padding:12px;
+            border-bottom:1px solid #eee;
+            text-align:center;
+        }
+
+        .actions button {
+            border:none;
+            padding:6px 10px;
+            border-radius:4px;
+            cursor:pointer;
+            font-size:14px;
+        }
+
+        .plus { background:#4CAF50; color:white; }
+        .minus { background:#ff9800; color:white; }
+        .remove { background:#f44336; color:white; }
+
+        .total {
+            margin-top:20px;
+            text-align:right;
+            font-size:20px;
+            font-weight:bold;
+        }
+
+        .footer {
+            display:flex;
+            justify-content:space-between;
+            margin-top:30px;
+        }
+
+        .btn {
+            padding:10px 20px;
+            background:#4CAF50;
+            color:white;
+            border:none;
+            border-radius:5px;
+            text-decoration:none;
+            font-weight:bold;
+        }
+
+        .btn.secondary {
+            background:#777;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ШАПКА -->
+<div class="header">
+    <div><strong>Healthy Shop 🥗</strong></div>
+    <div>
+        <a href="{% url 'product_list' %}">Магазин</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}">Выйти</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- КОНТЕНТ -->
+<div class="container">
+    <h2>🛒 Ваша корзина</h2>
+
+    {% if items %}
+    <table>
+        <tr>
+            <th>Товар</th>
+            <th>Кол-во</th>
+            <th>Цена</th>
+            <th>Сумма</th>
+            <th>Действия</th>
+        </tr>
+
+        {% for item in items %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.product.price }} ₽</td>
+            <td>{{ item.product.price|multiply:item.quantity }} ₽</td>
+            <td class="actions">
+                <form method="post" action="{% url 'increase_item' item.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button class="plus">+</button>
+                </form>
+
+                <form method="post" action="{% url 'decrease_item' item.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button class="minus">−</button>
+                </form>
+
+                <form method="post" action="{% url 'remove_item' item.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button class="remove">✖</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="total">
+        Итого: {{ total }} ₽
+    </div>
+
+    <div class="footer">
+        <a href="{% url 'product_list' %}" class="btn secondary">← Вернуться в магазин</a>
+        <a href="{% url 'checkout' %}" class="btn">Оформить заказ</a>
+    </div>
+
+    {% else %}
+        <p>Корзина пуста</p>
+        <a href="{% url 'product_list' %}" class="btn">Перейти в магазин</a>
+    {% endif %}
+</div>
+
+</body>
+</html>
